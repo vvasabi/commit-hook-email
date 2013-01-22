@@ -63,5 +63,17 @@ foreach ($json->commits as $commit) {
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
     $headers .= 'From: ' . $commit->author->name . ' <' . $from . '>' . "\r\n";
     $headers .= 'Reply-To: ' . $commit->author->email . "\r\n";
-    mail($to, $subject, $message, $headers);
+    mail(filter_to($to, $commit->author->email), $subject, $message, $headers);
 }
+
+function filter_to($to, $exclude) {
+  $receipients = explode(',', $to);
+  $result = array();
+  foreach ($receipients as $receipient) {
+    if (trim($receipient) != $exclude) {
+      array_push($result, $receipient);
+    }
+  }
+  return implode(',', $result);
+}
+
